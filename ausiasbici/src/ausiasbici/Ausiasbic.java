@@ -26,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.awt.event.ActionEvent;
+import java.awt.CardLayout;
 
 public class Ausiasbic {
 	
@@ -73,6 +74,8 @@ public class Ausiasbic {
 	 */
 	public Ausiasbic() {
 		initialize();
+		
+		
 	}
 
 	private void btnDevolverBicicletaActionPerformed(java.awt.event.ActionEvent evt) {                                                     
@@ -114,7 +117,8 @@ public class Ausiasbic {
 	private void initialize() {
 		frmAusiasBici = new JFrame();
 		frmAusiasBici.setTitle("AUSIÀS BICI");
-		frmAusiasBici.setBounds(100, 100, 1060, 780);
+		frmAusiasBici.setBounds(100, 100, 1800, 1000);
+		//frmAusiasBici.setBounds(100, 100, 1060, 780);
 		frmAusiasBici.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmAusiasBici.getContentPane().setLayout(null);
 		
@@ -124,16 +128,17 @@ public class Ausiasbic {
 		frmAusiasBici.getContentPane().add(lblAusiasM);
 		
 		//Cada vez que pulsamos en una opcion mostrar los componentes necesarios
+		//PANELES
 		JPanel panelTotal = new JPanel();
 		panelTotal.setBounds(43, 331, 522, 367);
 		frmAusiasBici.getContentPane().add(panelTotal);
-		panelTotal.setLayout(null);
+		panelTotal.setLayout(new CardLayout(0, 0));
 		
 		JPanel panelAddUser = new JPanel();
-		panelAddUser.setBounds(12, 11, 498, 345);
-		panelTotal.add(panelAddUser);
+		panelTotal.add(panelAddUser, "name_1028625079080600");
 		panelAddUser.setLayout(null);
 		panelAddUser.setVisible(false);
+		
 		
 		
 		JLabel lblNombre = new JLabel("Nombre:");
@@ -146,7 +151,7 @@ public class Ausiasbic {
 		panelAddUser.add(textFieldNombre);
 		
 		JLabel lblId = new JLabel("ID:");
-		lblId.setBounds(54, 28, 65, 24);
+		lblId.setBounds(54, 28, 106, 24);
 		panelAddUser.add(lblId);
 		
 		textFieldIdUsuario = new JTextField();
@@ -231,6 +236,9 @@ public class Ausiasbic {
 		btnMostrarUsuario.setBounds(599, 138, 162, 25);
 		frmAusiasBici.getContentPane().add(btnMostrarUsuario);
 		
+		
+		
+		
 		JButton btnAddUsuario = new JButton("Añadir");
 		btnAddUsuario.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -300,21 +308,30 @@ public class Ausiasbic {
 		btnAddUsuario.setBounds(193, 289, 89, 23);
 		panelAddUser.add(btnAddUsuario);
 		
+		JPanel panelAlquilar = new JPanel();
+		panelTotal.add(panelAlquilar, "name_1028674238365400");
+		panelAlquilar.setLayout(null);
+		
+		JPanel panelDevolver = new JPanel();
+		panelTotal.add(panelDevolver, "name_1028689232643000");
+		panelDevolver.setLayout(null);
+		
 		JPanel panelAddBici = new JPanel();
-		panelAddBici.setBounds(0, 0, 498, 345);
-		panelAddUser.add(panelAddBici);
+		panelTotal.add(panelAddBici, "name_1028714407154100");
 		panelAddBici.setLayout(null);
 		
+
+		
 		JLabel lblIDBici = new JLabel("ID para  la bicicleta:");
-		lblIDBici.setBounds(52, 33, 184, 16);
+		lblIDBici.setBounds(52, 76, 184, 16);
 		panelAddBici.add(lblIDBici);
 		
 		textFieldIDBici = new JTextField();
-		textFieldIDBici.setBounds(221, 28, 235, 26);
+		textFieldIDBici.setBounds(213, 71, 235, 26);
 		panelAddBici.add(textFieldIDBici);
 		textFieldIDBici.setColumns(10);
 		
-		
+	
 		JLabel lblOpcion = new JLabel("Opción a realizar:");
 		lblOpcion.setBounds(60, 139, 187, 23);
 		frmAusiasBici.getContentPane().add(lblOpcion);
@@ -325,6 +342,7 @@ public class Ausiasbic {
 			public void actionPerformed(ActionEvent e) {
 				panelAddUser.setVisible(true);
 				panelAddBici.setVisible(false);
+				panelAlquilar.setVisible(false);
 				
 			}
 		});
@@ -344,6 +362,7 @@ public class Ausiasbic {
 				String idBici = textFieldIDBici.getText();
 				panelAddUser.setVisible(false);
 				panelAddBici.setVisible(true);
+				panelAlquilar.setVisible(false);
 			
 				try {
 				Connection con = ConnectionSingleton.getConnection();
@@ -404,6 +423,9 @@ public class Ausiasbic {
 		JButton btnAlquilarBicicleta = new JButton("Alquilar bicicleta");
 		btnAlquilarBicicleta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				panelAddUser.setVisible(false);
+				panelAddBici.setVisible(false);
+				panelAlquilar.setVisible(true);
 			}
 		});
 		btnAlquilarBicicleta.setBounds(83, 266, 181, 25);
@@ -472,9 +494,7 @@ public class Ausiasbic {
 		});
 		btnMostrarBicis.setBounds(599, 414, 162, 25);
 		frmAusiasBici.getContentPane().add(btnMostrarBicis);
-		
 
-		
 
 	}
 }
