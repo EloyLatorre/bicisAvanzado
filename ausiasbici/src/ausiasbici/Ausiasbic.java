@@ -2,6 +2,7 @@ package ausiasbici;
 
 import java.awt.EventQueue;
 
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -16,11 +17,11 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-
 import javax.swing.ImageIcon;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -42,11 +43,11 @@ public class Ausiasbic {
 		}
 	}
 	private JFrame frmAusiasBici;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
-	private JTextField textField_3;
-	private JTextField textField_4;
+	private JTextField textFieldNombre;
+	private JTextField textFieldIdUsuario;
+	private JTextField textFieldTelef;
+	private JTextField textFieldDni;
+	private JTextField textFieldIdBici;
 	private JTable JTableUser;
 	private JTable JTableBici;
 
@@ -90,97 +91,73 @@ public class Ausiasbic {
 		
 		//Cada vez que pulsamos en una opcion mostrar los componentes necesarios
 		JPanel panelTotal = new JPanel();
-		panelTotal.setBounds(43, 350, 521, 312);
+		panelTotal.setBounds(43, 331, 522, 367);
 		frmAusiasBici.getContentPane().add(panelTotal);
 		panelTotal.setLayout(null);
 		
 		JPanel panelAddUser = new JPanel();
-		panelAddUser.setBounds(12, 11, 498, 289);
+		panelAddUser.setBounds(12, 11, 498, 345);
 		panelTotal.add(panelAddUser);
 		panelAddUser.setLayout(null);
-		//panelAddUser.setVisible(true);
-		//Apilamos paneles para cada opcion segun el radiobtn?
+		panelAddUser.setVisible(false);
+		
 		
 		JLabel lblNombre = new JLabel("Nombre:");
 		lblNombre.setBounds(54, 80, 65, 24);
 		panelAddUser.add(lblNombre);
 		
-		textField = new JTextField();
-		textField.setColumns(10);
-		textField.setBounds(219, 82, 237, 20);
-		panelAddUser.add(textField);
+		textFieldNombre = new JTextField();
+		textFieldNombre.setColumns(10);
+		textFieldNombre.setBounds(219, 82, 237, 20);
+		panelAddUser.add(textFieldNombre);
 		
 		JLabel lblId = new JLabel("ID:");
 		lblId.setBounds(54, 28, 65, 24);
 		panelAddUser.add(lblId);
 		
-		textField_1 = new JTextField();
-		textField_1.setColumns(10);
-		textField_1.setBounds(219, 31, 237, 20);
-		panelAddUser.add(textField_1);
+		textFieldIdUsuario = new JTextField();
+		textFieldIdUsuario.setEditable(false);
+		textFieldIdUsuario.setColumns(10);
+		textFieldIdUsuario.setBounds(219, 31, 237, 20);
+		panelAddUser.add(textFieldIdUsuario);
 		
 		JLabel lblTelefono = new JLabel("Teléfono:");
 		lblTelefono.setBounds(54, 132, 106, 24);
 		panelAddUser.add(lblTelefono);
 		
-		textField_2 = new JTextField();
-		textField_2.setColumns(10);
-		textField_2.setBounds(219, 133, 237, 20);
-		panelAddUser.add(textField_2);
+		textFieldTelef = new JTextField();
+		textFieldTelef.setColumns(10);
+		textFieldTelef.setBounds(219, 133, 237, 20);
+		panelAddUser.add(textFieldTelef);
 		
 		JLabel lbldni = new JLabel("DNI:");
 		lbldni.setBounds(54, 184, 65, 24);
 		panelAddUser.add(lbldni);
 		
-		textField_3 = new JTextField();
-		textField_3.setColumns(10);
-		textField_3.setBounds(219, 184, 237, 20);
-		panelAddUser.add(textField_3);
+		textFieldDni = new JTextField();
+		textFieldDni.setColumns(10);
+		textFieldDni.setBounds(219, 184, 237, 20);
+		panelAddUser.add(textFieldDni);
 		
 		JLabel lblBicicletaAsociada = new JLabel("Bicicleta asociada:");
 		lblBicicletaAsociada.setBounds(54, 236, 170, 24);
 		panelAddUser.add(lblBicicletaAsociada);
 		
-		textField_4 = new JTextField();
-		textField_4.setColumns(10);
-		textField_4.setBounds(219, 235, 237, 20);
-		panelAddUser.add(textField_4);
-		
-		JLabel lblOpcion = new JLabel("Opción a realizar:");
-		lblOpcion.setBounds(60, 139, 187, 23);
-		frmAusiasBici.getContentPane().add(lblOpcion);
-		
-		
-		JButton btnAddUsuario = new JButton("Añadir usuario");
-		btnAddUsuario.setBounds(80, 217, 181, 25);
-		frmAusiasBici.getContentPane().add(btnAddUsuario);
-		
-		JButton btnAddBici = new JButton("Añadir bicicleta");
-		btnAddBici.setBounds(329, 217, 181, 25);
-		frmAusiasBici.getContentPane().add(btnAddBici);
-		
-		JButton btnDevolverBicicleta = new JButton("Devolver bicicleta");
-		btnDevolverBicicleta.setBounds(329, 283, 181, 25);
-		frmAusiasBici.getContentPane().add(btnDevolverBicicleta);
-		
-		JButton btnAlquilarBicicleta = new JButton("Alquilar bicicleta");
-		btnAlquilarBicicleta.setBounds(80, 283, 181, 25);
-		frmAusiasBici.getContentPane().add(btnAlquilarBicicleta);
-		
-		JLabel lblNewLabel = new JLabel("");
-		lblNewLabel.setIcon(new ImageIcon(Ausiasbic.class.getResource("/img/bici150.png")));
-		lblNewLabel.setBounds(50, 53, 136, 74);
-		frmAusiasBici.getContentPane().add(lblNewLabel);
+		textFieldIdBici = new JTextField();
+		textFieldIdBici.setColumns(10);
+		textFieldIdBici.setBounds(219, 235, 237, 20);
+		panelAddUser.add(textFieldIdBici);
 		
 		JButton btnMostrarUsuario = new JButton("Mostrar usuarios");
 		btnMostrarUsuario.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				//MOSTRAR USUARIOS
 				DefaultTableModel model = new DefaultTableModel();
-				model.addColumn("codigo");
-				model.addColumn("nombre");
-				model.addColumn("precio");
-				model.addColumn("unidad");
+				model.addColumn("ID Usuario");
+				model.addColumn("Nombre");
+				model.addColumn("Teléfono");
+				model.addColumn("DNI");
+				model.addColumn("ID Bicicleta");
 				
 				try {
 					model.setRowCount(0);
@@ -194,7 +171,7 @@ public class Ausiasbic {
 					row[0] = rs.getInt("id_usuario");
 					row[1] = rs.getString("nombre");
 					row[2] = rs.getString("telefono");
-					row[3] = rs.getInt("dni");
+					row[3] = rs.getString("dni");
 					row[4] = rs.getInt("id_bicicleta");
 					model.addRow(row);			
 					}
@@ -211,24 +188,156 @@ public class Ausiasbic {
 				frmAusiasBici.getContentPane().add(JTableUser);
 				JTableUser.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 				JScrollPane scrollPaneUser = new JScrollPane(JTableUser);
-				scrollPaneUser.setBounds(599, 199, 338, 127);
+				scrollPaneUser.setBounds(599, 199, 380, 130);
 				frmAusiasBici.getContentPane().add(scrollPaneUser);
-				
-				
-				
+
 				
 			}
 		});
 		btnMostrarUsuario.setBounds(599, 138, 162, 25);
 		frmAusiasBici.getContentPane().add(btnMostrarUsuario);
 		
+		JButton btnAddUsuario = new JButton("Añadir");
+		btnAddUsuario.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				try {
+					//AÑADIR USUARIO
+
+					String nombre = textFieldNombre.getText();
+					String telefono = textFieldTelef.getText();
+					String dni = textFieldDni.getText();
+					String id_bici=textFieldIdBici.getText();
+
+					if (nombre == null || nombre.isEmpty() || nombre.trim().isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Introduce un nombre");
+						textFieldNombre.requestFocus();
+						return;
+					}
+					if (telefono == null || telefono.isEmpty() || telefono.trim().isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Introduce un teléfono");
+						textFieldTelef.requestFocus();
+						return;
+					}
+					if (dni == null || dni.isEmpty() || dni.trim().isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Introduce un DNI");
+						textFieldDni.requestFocus();
+						return;
+					}
+					if (id_bici == null || id_bici.isEmpty() || id_bici.trim().isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Introduce un ID Bici válido");
+						textFieldIdBici.requestFocus();
+						return;
+					}
+					
+					
+		            // Obtener la conexión a la base de datos
+					Connection con=ConnectionSingleton.getConnection();
+					
+		            // Crear la sentencia SQL para insertar un nuevo producto
+					PreparedStatement pst = con.prepareStatement("INSERT INTO usuario (nombre, telefono, dni, id_bicicleta) VALUES (?, ?, ?, ?)");
+					pst.setString(1,textFieldNombre.getText());
+					pst.setInt(2,Integer.parseInt(textFieldTelef.getText()));
+					pst.setString(3,textFieldDni.getText());
+					pst.setInt(4,Integer.parseInt(textFieldIdBici.getText()));
+				
+					// Ejecutar la sentencia SQL
+					pst.executeUpdate();
+					
+					// Actualizar la lista de productos mostrada en la interfaz gráfica
+					btnMostrarUsuario.doClick();
+					
+					JOptionPane.showMessageDialog(null, "Usuario añadido"); //Caso OK
+
+					textFieldNombre.setText("");
+					textFieldTelef.setText("");
+					textFieldDni.setText("");
+					textFieldIdBici.setText("");
+					
+					pst.close();
+					con.close();
+				}catch(SQLException e2) {
+					JOptionPane.showMessageDialog(null, e2.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				}
+
+				
+			}
+		});
+		btnAddUsuario.setBounds(193, 289, 89, 23);
+		panelAddUser.add(btnAddUsuario);
+		
+		JPanel panelAddBici = new JPanel();
+		panelAddBici.setBounds(0, 0, 498, 345);
+		panelAddUser.add(panelAddBici);
+		
+		JLabel lblOpcion = new JLabel("Opción a realizar:");
+		lblOpcion.setBounds(60, 139, 187, 23);
+		frmAusiasBici.getContentPane().add(lblOpcion);
+		
+		
+		JButton btnRellenarUsuario = new JButton("Añadir usuario");
+		btnRellenarUsuario.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				panelAddUser.setVisible(true);
+				panelAddBici.setVisible(false);
+				
+			}
+		});
+		btnRellenarUsuario.setBounds(83, 200, 181, 25);
+		frmAusiasBici.getContentPane().add(btnRellenarUsuario);
+		
+		JButton btnRellenarBici = new JButton("Añadir bicicleta");
+		btnRellenarBici.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				panelAddBici.setVisible(true);
+				panelAddUser.setVisible(false);
+			}
+		});
+		btnRellenarBici.setBounds(332, 200, 181, 25);
+		frmAusiasBici.getContentPane().add(btnRellenarBici);
+		
+		JButton btnDevolverBicicleta = new JButton("Devolver bicicleta");
+		btnDevolverBicicleta.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnDevolverBicicleta.setBounds(332, 266, 181, 25);
+		frmAusiasBici.getContentPane().add(btnDevolverBicicleta);
+		
+		JButton btnAlquilarBicicleta = new JButton("Alquilar bicicleta");
+		btnAlquilarBicicleta.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnAlquilarBicicleta.setBounds(83, 266, 181, 25);
+		frmAusiasBici.getContentPane().add(btnAlquilarBicicleta);
+		
+		JLabel lblNewLabel = new JLabel("");
+		
+		//Esto da error
+		//lblNewLabel.setIcon(new ImageIcon(Ausiasbic.class.getResource("/img/bici150.png")));
+		//Creo que se soluciona así:
+		/*
+		 * URL url = getClass().getResource("/ruta/a/la/imagen.png");
+		 * if (url != null) {
+		 * ImageIcon imageIcon = new ImageIcon(url)
+		 * } else {
+		 *  System.out.println("No se pudo cargar la imagen.");
+		 *  }
+		 */
+		lblNewLabel.setBounds(50, 53, 136, 74);
+		frmAusiasBici.getContentPane().add(lblNewLabel);
+		
+	
+		
 		JButton btnMostrarBicis = new JButton("Mostrar bicicletas");
 		btnMostrarBicis.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				//MOSTRAR BICIS
 				DefaultTableModel model = new DefaultTableModel();
-				model.addColumn("id_bicicleta");
-				model.addColumn("disponibilidad");
+				model.addColumn("ID Bicicleta");
+				model.addColumn("Disponibilidad");
 	
 				
 				try {
@@ -259,7 +368,7 @@ public class Ausiasbic {
 				frmAusiasBici.getContentPane().add(JTableBici);
 				JTableBici.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 				JScrollPane scrollPaneBici = new JScrollPane(JTableBici);
-				scrollPaneBici.setBounds(599, 470, 338, 127);
+				scrollPaneBici.setBounds(599, 475, 380, 130);
 				frmAusiasBici.getContentPane().add(scrollPaneBici);
 				
 				
