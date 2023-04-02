@@ -375,8 +375,13 @@ public class Ausiasbic {
 
 			try {
 				
-				
 				Connection con=ConnectionSingleton.getConnection();
+				
+				if (id_bici_alquilar.equals("0")) {
+                    JOptionPane.showMessageDialog(null, "La bicicleta con id 0 no puede ser alquilada", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+				
+				
 				//Comprobar que existe bici y user
 				PreparedStatement exist_b_pstmt = con.prepareStatement("SELECT * FROM bicicleta WHERE id_bicicleta=?");
 				exist_b_pstmt.setInt(1, Integer.parseInt(id_bici_alquilar));
@@ -430,10 +435,10 @@ public class Ausiasbic {
 						        btnMostrarBicis.doClick();
 						        btnMostrarUsuario.doClick();							
 						}
-						
+					
 						rs_sel.close();
 						sel_pstmt.close();
-						
+					}	
 					}
 					}
 				
@@ -442,7 +447,7 @@ public class Ausiasbic {
 			}catch(SQLException e3) {
 				JOptionPane.showMessageDialog(null, e3.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	        } 
-	
+			
 			}
 		});
 		btnAlquilar.setBounds(193, 246, 89, 25);
