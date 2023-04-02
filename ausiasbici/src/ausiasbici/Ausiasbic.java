@@ -48,7 +48,6 @@ public class Ausiasbic {
 	private JTextField textFieldIdUsuario;
 	private JTextField textFieldTelef;
 	private JTextField textFieldDni;
-	private JTextField textFieldIdBici;
 	private JTable JTableUser;
 	private JTable JTableBici;
 	private JTextField textFieldIDBici;
@@ -143,50 +142,41 @@ public class Ausiasbic {
 		
 		
 		JLabel lblNombre = new JLabel("Nombre:");
-		lblNombre.setBounds(54, 80, 65, 24);
+		lblNombre.setBounds(52, 111, 65, 24);
 		panelAddUser.add(lblNombre);
 		
 		textFieldNombre = new JTextField();
 		textFieldNombre.setColumns(10);
-		textFieldNombre.setBounds(219, 82, 237, 20);
+		textFieldNombre.setBounds(217, 113, 237, 20);
 		panelAddUser.add(textFieldNombre);
 		
 		JLabel lblId = new JLabel("ID:");
-		lblId.setBounds(54, 28, 106, 24);
+		lblId.setBounds(52, 59, 106, 24);
 		panelAddUser.add(lblId);
 		
 		textFieldIdUsuario = new JTextField();
 		textFieldIdUsuario.setEditable(false);
 		textFieldIdUsuario.setColumns(10);
-		textFieldIdUsuario.setBounds(219, 31, 237, 20);
+		textFieldIdUsuario.setBounds(217, 62, 237, 20);
 		panelAddUser.add(textFieldIdUsuario);
 		
 		JLabel lblTelefono = new JLabel("Teléfono:");
-		lblTelefono.setBounds(54, 132, 106, 24);
+		lblTelefono.setBounds(52, 163, 106, 24);
 		panelAddUser.add(lblTelefono);
 		
 		textFieldTelef = new JTextField();
 		textFieldTelef.setColumns(10);
-		textFieldTelef.setBounds(219, 133, 237, 20);
+		textFieldTelef.setBounds(217, 164, 237, 20);
 		panelAddUser.add(textFieldTelef);
 		
 		JLabel lbldni = new JLabel("DNI:");
-		lbldni.setBounds(54, 184, 65, 24);
+		lbldni.setBounds(52, 215, 65, 24);
 		panelAddUser.add(lbldni);
 		
 		textFieldDni = new JTextField();
 		textFieldDni.setColumns(10);
-		textFieldDni.setBounds(219, 184, 237, 20);
+		textFieldDni.setBounds(217, 215, 237, 20);
 		panelAddUser.add(textFieldDni);
-		
-		JLabel lblBicicletaAsociada = new JLabel("Bicicleta asociada:");
-		lblBicicletaAsociada.setBounds(54, 236, 170, 24);
-		panelAddUser.add(lblBicicletaAsociada);
-		
-		textFieldIdBici = new JTextField();
-		textFieldIdBici.setColumns(10);
-		textFieldIdBici.setBounds(219, 235, 237, 20);
-		panelAddUser.add(textFieldIdBici);
 		
 		JButton btnMostrarUsuario = new JButton("Mostrar usuarios");
 		btnMostrarUsuario.addActionListener(new ActionListener() {
@@ -294,7 +284,7 @@ public class Ausiasbic {
 					String nombre = textFieldNombre.getText();
 					String telefono = textFieldTelef.getText();
 					String dni = textFieldDni.getText();
-					String id_bici=textFieldIdBici.getText();
+
 
 					if (nombre == null || nombre.isEmpty() || nombre.trim().isEmpty()) {
 						JOptionPane.showMessageDialog(null, "Introduce un nombre");
@@ -311,24 +301,19 @@ public class Ausiasbic {
 						textFieldDni.requestFocus();
 						return;
 					}
-					if (id_bici == null || id_bici.isEmpty() || id_bici.trim().isEmpty()) {
-						JOptionPane.showMessageDialog(null, "Introduce un ID Bici válido");
-						textFieldIdBici.requestFocus();
-						return;
-					}
-					
+				
 					
 		            // Obtener la conexión a la base de datos
 					Connection con=ConnectionSingleton.getConnection();
 					
 		            // Crear la sentencia SQL para insertar un nuevo producto
-					PreparedStatement pst = con.prepareStatement("INSERT INTO usuario (nombre, telefono, dni, id_bicicleta) VALUES (?, ?, ?, ?)");
-					// PreparedStatement pst = con.prepareStatement("INSERT INTO usuario (nombre, telefono, dni, id_bicicleta) VALUES (?, ?, ?, NULL)");
+
+					 PreparedStatement pst = con.prepareStatement("INSERT INTO usuario (nombre, telefono, dni, id_bicicleta) VALUES (?, ?, ?, ?)");
 					pst.setString(1,textFieldNombre.getText());
 					pst.setInt(2,Integer.parseInt(textFieldTelef.getText()));
 					pst.setString(3,textFieldDni.getText());
-					pst.setInt(4,Integer.parseInt(textFieldIdBici.getText()));
-				
+					pst.setInt(4, 0);
+					
 					// Ejecutar la sentencia SQL
 					pst.executeUpdate();
 					
@@ -340,7 +325,7 @@ public class Ausiasbic {
 					textFieldNombre.setText("");
 					textFieldTelef.setText("");
 					textFieldDni.setText("");
-					textFieldIdBici.setText("");
+
 					
 					pst.close();
 					con.close();
