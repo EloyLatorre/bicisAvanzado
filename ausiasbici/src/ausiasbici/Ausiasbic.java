@@ -96,7 +96,7 @@ public class Ausiasbic {
 	            ResultSet rs = stmt.executeQuery("SELECT * FROM bicicletas WHERE id=" + idBici);
 	            if (rs.next()) {
 	                // Si la bicicleta está alquilada, marcarla como disponible
-	                if (rs.getBoolean("alquilada")) {
+	                if (rs.getBoolean("disponibilidad")) {
 	                    PreparedStatement updateStmt = con.prepareStatement("UPDATE bicicleta SET disponibilidad=false WHERE id=?");
 	                    updateStmt.setString(1, idBici);
 	                    updateStmt.executeUpdate();
@@ -476,10 +476,10 @@ public class Ausiasbic {
 		        try {
 		            Connection con = ConnectionSingleton.getConnection();
 		            Statement stmt = con.createStatement();
-		            ResultSet rs = stmt.executeQuery("SELECT * FROM bicicleta WHERE id=" + idBici);
+		            ResultSet rs = stmt.executeQuery("SELECT * FROM bicicleta WHERE id_bicicleta=" + idBici);
 		            if (rs.next()) {
 		                // Si la bicicleta está alquilada, marcarla como disponible
-		                if (rs.getBoolean("alquilada")) {
+		                if (rs.getBoolean("disponibilidad")) {
 		                    PreparedStatement updateStmt = con.prepareStatement("UPDATE bicicletas SET disponibilidad=true, disponibilidad=false WHERE id=?");
 		                    updateStmt.setString(1, idBici);
 		                    updateStmt.executeUpdate();
@@ -494,7 +494,7 @@ public class Ausiasbic {
 					con.close();
 					stmt.close();
 		        } catch (SQLException ex) {
-		           // JOptionPane.showMessageDialog(null, "Error al buscar la bicicleta en la base de datos: " + ex.getMessage());
+		           JOptionPane.showMessageDialog(null, "Error al buscar la bicicleta en la base de datos: " + ex.getMessage());
 		        }
 		        
 		    	
@@ -509,7 +509,7 @@ public class Ausiasbic {
 				    ResultSet rs = stmt.executeQuery("SELECT * FROM bicicleta WHERE id=" + idBici);
 				    if (rs.next()) {
 				        // Si la bicicleta está alquilada, marcarla como disponible
-				        if (rs.getBoolean("alquilada")) {
+				        if (rs.getBoolean("disponibilidad")) {
 				            PreparedStatement updateStmt = con.prepareStatement("UPDATE bicicleta SET disponibilidad=false WHERE id=?");
 				            updateStmt.setString(1, idBici);
 				            updateStmt.executeUpdate();
@@ -601,6 +601,7 @@ public class Ausiasbic {
 		    public void actionPerformed(ActionEvent e) {
 		        panelAddUser.setVisible(false);
 		        panelAlquilar.setVisible(false);
+		        panelDevolver.setVisible(false);
 		        panelAddBici.setVisible(true);
 
 		    	
