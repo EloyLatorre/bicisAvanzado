@@ -93,7 +93,7 @@ public class Ausiasbic {
 	        try {
 	            Connection con = ConnectionSingleton.getConnection();
 	            Statement stmt = con.createStatement();
-	            ResultSet rs = stmt.executeQuery("SELECT * FROM bicicletas WHERE id=" + idBici);
+	            ResultSet rs = stmt.executeQuery("SELECT * FROM bicicleta WHERE id=" + idBici);
 	            if (rs.next()) {
 	                // Si la bicicleta está alquilada, marcarla como disponible
 	                if (rs.getBoolean("disponibilidad")) {
@@ -139,8 +139,6 @@ public class Ausiasbic {
 		panelTotal.add(panelAddUser, "name_1028625079080600");
 		panelAddUser.setLayout(null);
 		panelAddUser.setVisible(false);
-		
-		
 		
 		JLabel lblNombre = new JLabel("Nombre:");
 		lblNombre.setBounds(52, 111, 65, 24);
@@ -480,7 +478,7 @@ public class Ausiasbic {
 		            if (rs.next()) {
 		                // Si la bicicleta está alquilada, marcarla como disponible
 		                if (rs.getBoolean("disponibilidad")) {
-		                    PreparedStatement updateStmt = con.prepareStatement("UPDATE bicicletas SET disponibilidad=true, disponibilidad=false WHERE id=?");
+		                    PreparedStatement updateStmt = con.prepareStatement("UPDATE bicicleta SET disponibilidad=true, disponibilidad=false WHERE id_bicicleta=?");
 		                    updateStmt.setString(1, idBici);
 		                    updateStmt.executeUpdate();
 		                    JOptionPane.showMessageDialog(null, "Bicicleta devuelta con éxito.");
@@ -510,7 +508,7 @@ public class Ausiasbic {
 				    if (rs.next()) {
 				        // Si la bicicleta está alquilada, marcarla como disponible
 				        if (rs.getBoolean("disponibilidad")) {
-				            PreparedStatement updateStmt = con.prepareStatement("UPDATE bicicleta SET disponibilidad=false WHERE id=?");
+				            PreparedStatement updateStmt = con.prepareStatement("UPDATE bicicleta SET disponibilidad=false WHERE id_bicicleta=?");
 				            updateStmt.setString(1, idBici);
 				            updateStmt.executeUpdate();
 				            JOptionPane.showMessageDialog(null, "Bicicleta devuelta con éxito.");
