@@ -27,6 +27,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.awt.event.ActionEvent;
 import java.awt.CardLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class Ausiasbic {
 	
@@ -77,40 +79,90 @@ public class Ausiasbic {
 	public Ausiasbic() {
 		initialize();
 		
+		//MOSTRAR USUARIOS
+		DefaultTableModel model = new DefaultTableModel();
+		model.addColumn("ID Usuario");
+		model.addColumn("Nombre");
+		model.addColumn("Teléfono");
+		model.addColumn("DNI");
+		model.addColumn("ID Bicicleta");
 		
-	}
+		try {
+			model.setRowCount(0);
+			Connection con=ConnectionSingleton.getConnection();
+			
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM usuario");
+			
+			while (rs.next()) {
+			Object[] row = new Object[5];
+			row[0] = rs.getInt("id_usuario");
+			row[1] = rs.getString("nombre");
+			row[2] = rs.getString("telefono");
+			row[3] = rs.getString("dni");
+			row[4] = rs.getInt("id_bicicleta");
+			model.addRow(row);			
+			}
+			
+			stmt.close();
+			rs.close();
+			con.close();
+		}catch(SQLException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);	
+		}
 
-	private void btnDevolverBicicletaActionPerformed(java.awt.event.ActionEvent evt) {                                                     
-	    // Mostrar formulario para ingresar el ID de la bicicleta
-	    JTextField textFieldIDBici = new JTextField();
-	    Object[] message = {
-	        "ID de la bicicleta:", textFieldIDBici
-	    };
-	    int option = JOptionPane.showConfirmDialog(null, message, "Devolver bicicleta", JOptionPane.OK_CANCEL_OPTION);
-	    if (option == JOptionPane.OK_OPTION) {
-	        String idBici = textFieldIDBici.getText();
-	        // Buscar la bicicleta en la base de datos
-	        try {
-	            Connection con = ConnectionSingleton.getConnection();
-	            Statement stmt = con.createStatement();
-	            ResultSet rs = stmt.executeQuery("SELECT * FROM bicicleta WHERE id=" + idBici);
-	            if (rs.next()) {
-	                // Si la bicicleta está alquilada, marcarla como disponible
-	                if (rs.getBoolean("disponibilidad")) {
-	                    PreparedStatement updateStmt = con.prepareStatement("UPDATE bicicleta SET disponibilidad=false WHERE id=?");
-	                    updateStmt.setString(1, idBici);
-	                    updateStmt.executeUpdate();
-	                    JOptionPane.showMessageDialog(null, "Bicicleta devuelta con éxito.");
-	                } else {
-	                    JOptionPane.showMessageDialog(null, "La bicicleta no está alquilada.");
-	                }
-	            } else {
-	                JOptionPane.showMessageDialog(null, "No se encontró la bicicleta con ID " + idBici + ".");
-	            }
-	        } catch (SQLException ex) {
-	            JOptionPane.showMessageDialog(null, "Error al buscar la bicicleta en la base de datos: " + ex.getMessage());
-	        }
-	    }
+		JTableUser = new JTable(model);
+		JTableUser.setBounds(571, 334, 237, -158);
+		frmAusiasBici.getContentPane().add(JTableUser);
+		JTableUser.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		JScrollPane scrollPaneUser = new JScrollPane(JTableUser);
+		scrollPaneUser.setBounds(599, 199, 380, 130);
+		frmAusiasBici.getContentPane().add(scrollPaneUser);
+
+		
+		
+		
+		
+		
+		
+		//MOSTRAR BICIS
+		DefaultTableModel modelB = new DefaultTableModel();
+		modelB.addColumn("ID Bicicleta");
+		modelB.addColumn("Disponibilidad");
+
+		
+		try {
+			modelB.setRowCount(0);
+			Connection con=ConnectionSingleton.getConnection();
+			
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM bicicleta");
+			
+			while (rs.next()) {
+			Object[] row = new Object[2];
+			row[0] = rs.getInt("id_bicicleta");
+			row[1] = rs.getString("disponibilidad");
+			
+			modelB.addRow(row);			
+			}
+			
+			stmt.close();
+			rs.close();
+			con.close();
+		}catch(SQLException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);	
+		}
+
+		JTableBici = new JTable(modelB);
+	
+		JTableBici.setBounds(571, 334, 237, -158);
+		frmAusiasBici.getContentPane().add(JTableBici);
+		JTableBici.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		JScrollPane scrollPaneBici = new JScrollPane(JTableBici);
+		scrollPaneBici.setBounds(599, 475, 380, 130);
+		frmAusiasBici.getContentPane().add(scrollPaneBici);
+		
+		
 	}
 
 	/**
@@ -178,8 +230,9 @@ public class Ausiasbic {
 		panelAddUser.add(textFieldDni);
 		
 		JButton btnMostrarUsuario = new JButton("Mostrar usuarios");
-		btnMostrarUsuario.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		btnMostrarUsuario.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
 				//MOSTRAR USUARIOS
 				DefaultTableModel model = new DefaultTableModel();
 				model.addColumn("ID Usuario");
@@ -208,8 +261,8 @@ public class Ausiasbic {
 					stmt.close();
 					rs.close();
 					con.close();
-				}catch(SQLException e) {
-					JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);	
+				}catch(SQLException e5) {
+					JOptionPane.showMessageDialog(null, e5.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);	
 				}
 
 				JTableUser = new JTable(model);
@@ -220,63 +273,22 @@ public class Ausiasbic {
 				scrollPaneUser.setBounds(599, 199, 380, 130);
 				frmAusiasBici.getContentPane().add(scrollPaneUser);
 
-				
 			}
 		});
+
 		btnMostrarUsuario.setBounds(599, 138, 162, 25);
 		frmAusiasBici.getContentPane().add(btnMostrarUsuario);
 		
 		JButton btnMostrarBicis = new JButton("Mostrar bicicletas");
-		btnMostrarBicis.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				//MOSTRAR BICIS
-				DefaultTableModel model = new DefaultTableModel();
-				model.addColumn("ID Bicicleta");
-				model.addColumn("Disponibilidad");
-	
-				
-				try {
-					model.setRowCount(0);
-					Connection con=ConnectionSingleton.getConnection();
-					
-					Statement stmt = con.createStatement();
-					ResultSet rs = stmt.executeQuery("SELECT * FROM bicicleta");
-					
-					while (rs.next()) {
-					Object[] row = new Object[2];
-					row[0] = rs.getInt("id_bicicleta");
-					row[1] = rs.getString("disponibilidad");
-					
-					model.addRow(row);			
-					}
-					
-					stmt.close();
-					rs.close();
-					con.close();
-				}catch(SQLException e) {
-					JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);	
-				}
-
-				JTableBici = new JTable(model);
-			
-				JTableBici.setBounds(571, 334, 237, -158);
-				frmAusiasBici.getContentPane().add(JTableBici);
-				JTableBici.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-				JScrollPane scrollPaneBici = new JScrollPane(JTableBici);
-				scrollPaneBici.setBounds(599, 475, 380, 130);
-				frmAusiasBici.getContentPane().add(scrollPaneBici);
-				
-				
-			}
-		});
 		btnMostrarBicis.setBounds(599, 414, 162, 25);
 		frmAusiasBici.getContentPane().add(btnMostrarBicis);
 		
 		
 		JButton btnAddUsuario = new JButton("Añadir");
-		btnAddUsuario.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
+		btnAddUsuario.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+
 				try {
 					//AÑADIR USUARIO
 
@@ -317,7 +329,6 @@ public class Ausiasbic {
 					pst.executeUpdate();
 					
 					// Actualizar la lista de productos mostrada en la interfaz gráfica
-					btnMostrarUsuario.doClick();
 					
 					JOptionPane.showMessageDialog(null, "Usuario añadido"); //Caso OK
 
@@ -325,13 +336,19 @@ public class Ausiasbic {
 					textFieldTelef.setText("");
 					textFieldDni.setText("");
 
-					
+					btnMostrarUsuario.doClick();
+					btnMostrarBicis.doClick();
 					pst.close();
 					con.close();
 				}catch(SQLException e2) {
 					JOptionPane.showMessageDialog(null, e2.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}
 
+			}
+		});
+		btnAddUsuario.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
 				
 			}
 		});
@@ -431,8 +448,7 @@ public class Ausiasbic {
 						        
 						        upd2_pstmt.executeUpdate();
 						        
-						        btnMostrarBicis.doClick();
-						        btnMostrarUsuario.doClick();							
+						        						
 						}
 					
 						rs_sel.close();
@@ -440,7 +456,8 @@ public class Ausiasbic {
 					}	
 					}
 					}
-				
+				btnMostrarBicis.doClick();
+		        btnMostrarUsuario.doClick();	
 				con.close();
 				
 			}catch(SQLException e3) {
@@ -469,65 +486,41 @@ public class Ausiasbic {
 		btnDevolver.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				String idBici = textFieldIDBiciDevolver.getText();
-		        // Buscar la bicicleta en la base de datos
-		        try {
-		            Connection con = ConnectionSingleton.getConnection();
-		            Statement stmt = con.createStatement();
-		            ResultSet rs = stmt.executeQuery("SELECT * FROM bicicleta WHERE id_bicicleta=" + idBici);
-		            if (rs.next()) {
-		                // Si la bicicleta está alquilada, marcarla como disponible
-		                if (rs.getBoolean("disponibilidad")) {
-		                    PreparedStatement updateStmt = con.prepareStatement("UPDATE bicicleta SET disponibilidad=true, disponibilidad=false WHERE id_bicicleta=?");
-		                    updateStmt.setString(1, idBici);
-		                    updateStmt.executeUpdate();
-		                    JOptionPane.showMessageDialog(null, "Bicicleta devuelta con éxito.");
-		                } else {
-		                    JOptionPane.showMessageDialog(null, "La bicicleta no está alquilada.");
-		                }
-		            } else {
-		                JOptionPane.showMessageDialog(null, "No se encontró la bicicleta con ID " + idBici + ".");
-		            }
-		            rs.close();
-					con.close();
-					stmt.close();
-		        } catch (SQLException ex) {
-		           JOptionPane.showMessageDialog(null, "Error al buscar la bicicleta en la base de datos: " + ex.getMessage());
-		        }
-		        
-		    	
+				
 				/*
 				 * No se podrá devolver una bici que no esté alquilada
 				 */
+				
 				// Buscar la bicicleta en la base de datos
 				try {
-					// String idBici = textFieldIDBici.getText();
-				    Connection con = ConnectionSingleton.getConnection();
-				    Statement stmt = con.createStatement();
-				    ResultSet rs = stmt.executeQuery("SELECT * FROM bicicleta WHERE id=" + idBici);
-				    if (rs.next()) {
-				        // Si la bicicleta está alquilada, marcarla como disponible
-				        if (rs.getBoolean("disponibilidad")) {
-				            PreparedStatement updateStmt = con.prepareStatement("UPDATE bicicleta SET disponibilidad=false WHERE id_bicicleta=?");
-				            updateStmt.setString(1, idBici);
-				            updateStmt.executeUpdate();
-				            JOptionPane.showMessageDialog(null, "Bicicleta devuelta con éxito.");
-				        } else {
-				            JOptionPane.showMessageDialog(null, "La bicicleta no está alquilada.");
-				        }
-				    } else {
-				        JOptionPane.showMessageDialog(null, "No se encontró la bicicleta con ID " + idBici + ".");
-				    }
-				    rs.close();
-				    con.close();
-				    stmt.close();
+					String idBici = textFieldIDBici.getText();
+					Connection con = ConnectionSingleton.getConnection();
+					PreparedStatement p_stmt = con.prepareStatement("SELECT * FROM bicicleta WHERE id_bicicleta= ? AND disponibilidad=false");
+					p_stmt.setString(1, idBici);
+					ResultSet rs = p_stmt.executeQuery();
+					
+					// Si la bicicleta está alquilada, marcarla como disponible
+					if (rs.next()) {
+						PreparedStatement updateStmt = con.prepareStatement("UPDATE bicicleta SET disponibilidad=true WHERE id_bicicleta=?");
+						updateStmt.setString(1, idBici);
+						updateStmt.executeUpdate();
+						JOptionPane.showMessageDialog(null, "Bicicleta devuelta con éxito.");
+					} else {
+						JOptionPane.showMessageDialog(null, "La bicicleta no está alquilada.");
+					}
+					
+					rs.close();
+					con.close();
+					
+					btnMostrarUsuario.doClick();
+					btnMostrarBicis.doClick();
+					
 				} catch (SQLException ex) {
-				  //  JOptionPane.showMessageDialog(null, "Error al buscar la bicicleta en la base de datos: " + ex.getMessage());
+					JOptionPane.showMessageDialog(null, "Error al buscar la bicicleta en la base de datos: " + ex.getMessage());
 				}
-
-				
 			}
-		});
+		}); 
+
 		btnDevolver.setBounds(388, 202, 117, 29);
 		panelDevolver.add(btnDevolver);
 		
@@ -556,15 +549,16 @@ public class Ausiasbic {
 		            Connection con = ConnectionSingleton.getConnection();
 		            PreparedStatement stmt = con.prepareStatement("INSERT INTO bicicleta (id_bicicleta, disponibilidad) VALUES (?, ?)");
 		            stmt.setString(1, idBici);
-		            stmt.setBoolean(2, false); // Especifica que la bicicleta no está alquilada al crearla
+		            stmt.setString(2, "true"); // Especifica que la bicicleta no está alquilada al crearla
 		            stmt.executeUpdate();
 		            JOptionPane.showMessageDialog(frmAusiasBici, "Bicicleta agregada correctamente.");
-
+		            btnMostrarBicis.doClick();
 		        } catch (SQLException ex) {
 		            ex.printStackTrace();
 		         //   JOptionPane.showMessageDialog(frmAusiasBici, "Error al agregar bicicleta: " + ex.getMessage());
 		        }
-				
+				btnMostrarUsuario.doClick();
+				btnMostrarBicis.doClick();
 				
 			}
 		});
@@ -615,6 +609,7 @@ public class Ausiasbic {
 				
 				panelAddUser.setVisible(false);
 				panelAddBici.setVisible(false);
+				panelAlquilar.setVisible(false);
 				panelDevolver.setVisible(true);
 
 			    
@@ -631,26 +626,13 @@ public class Ausiasbic {
 				panelAddUser.setVisible(false);
 				panelAddBici.setVisible(false);
 				panelAlquilar.setVisible(true);
+				panelDevolver.setVisible(false);
 			}
 		});
 		btnAlquilarBicicleta.setBounds(83, 266, 181, 25);
 		frmAusiasBici.getContentPane().add(btnAlquilarBicicleta);
 		
 		JLabel lblNewLabel = new JLabel("");
-	
-	
-		
-		//Esto da error
-		//lblNewLabel.setIcon(new ImageIcon(Ausiasbic.class.getResource("/img/bici150.png")));
-		//Creo que se soluciona así:
-		/*
-		 * URL url = getClass().getResource("/ruta/a/la/imagen.png");
-		 * if (url != null) {
-		 * ImageIcon imageIcon = new ImageIcon(url)
-		 * } else {
-		 *  System.out.println("No se pudo cargar la imagen.");
-		 *  }
-		 */
 		lblNewLabel.setBounds(50, 53, 136, 74);
 		frmAusiasBici.getContentPane().add(lblNewLabel);
 		
