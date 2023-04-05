@@ -1,11 +1,9 @@
 package ausiasbici;
 
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-
 import java.awt.Font;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -31,8 +29,14 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.JComboBox;
 
+/*
+ * Clase publica Ausiasbici
+ */
 public class Ausiasbic {
 
+/*
+ * Clase Conexión Singelton que permite la interación entre BBDD y programa
+ */
 	class ConnectionSingleton {
 		private static Connection con;
 
@@ -60,6 +64,7 @@ public class Ausiasbic {
 	/**
 	 * Launch the application.
 	 */
+
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -76,6 +81,7 @@ public class Ausiasbic {
 	/**
 	 * Create the application.
 	 */
+
 	public Ausiasbic() {
 		initialize();
 
@@ -91,16 +97,18 @@ public class Ausiasbic {
 		frmAusiasBici.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmAusiasBici.getContentPane().setLayout(null);
 
-		// MOSTRAR USUARIOS
-		DefaultTableModel model = new DefaultTableModel();
-		model.addColumn("ID Usuario");
-		model.addColumn("Nombre");
-		model.addColumn("Teléfono");
-		model.addColumn("DNI");
-		model.addColumn("ID Bicicleta");
+		/*
+		 *  Mostrar usuarios en tabla users
+		 */
+		DefaultTableModel modelU = new DefaultTableModel();
+		modelU.addColumn("ID Usuario");
+		modelU.addColumn("Nombre");
+		modelU.addColumn("Teléfono");
+		modelU.addColumn("DNI");
+		modelU.addColumn("ID Bicicleta");
 
 		try {
-			model.setRowCount(0);
+			modelU.setRowCount(0);
 			Connection con = ConnectionSingleton.getConnection();
 
 			Statement stmt = con.createStatement();
@@ -113,7 +121,7 @@ public class Ausiasbic {
 				row[2] = rs.getString("telefono");
 				row[3] = rs.getString("dni");
 				row[4] = rs.getInt("id_bicicleta");
-				model.addRow(row);
+				modelU.addRow(row);
 			}
 
 			stmt.close();
@@ -123,7 +131,7 @@ public class Ausiasbic {
 			JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
 
-		JTableUser = new JTable(model);
+		JTableUser = new JTable(modelU);
 		JTableUser.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
 		JScrollPane scrollPaneUser = new JScrollPane(JTableUser);
@@ -131,7 +139,9 @@ public class Ausiasbic {
 
 		frmAusiasBici.getContentPane().add(scrollPaneUser);
 
-		// MOSTRAR BICIS
+		/*
+		 * Mostrar bicis en tabla bicis
+		 */
 		DefaultTableModel modelB = new DefaultTableModel();
 		modelB.addColumn("ID Bicicleta");
 		modelB.addColumn("Disponibilidad");
@@ -171,8 +181,9 @@ public class Ausiasbic {
 		lblAusiasM.setBounds(375, 53, 393, 55);
 		frmAusiasBici.getContentPane().add(lblAusiasM);
 
-		// Cada vez que pulsamos en una opcion mostrar los componentes necesarios
-		// PANELES
+		/*
+		 * Declaración de 5 paneles los cuales segun se clicka un botón u otro muestran sus componentes
+		 */
 		JPanel panelTotal = new JPanel();
 		panelTotal.setBounds(43, 331, 522, 367);
 		frmAusiasBici.getContentPane().add(panelTotal);
@@ -195,7 +206,9 @@ public class Ausiasbic {
 		panelTotal.add(panelDevolver, "name_1028689232643000");
 		panelDevolver.setLayout(null);
 
-		// MOSTRAR USUARIOS
+		/*
+		 *  Evento de mostrar usuaraios mediante un botón
+		 */
 		JButton btnMostrarUsuario = new JButton("Mostrar usuarios");
 		btnMostrarUsuario.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -206,7 +219,7 @@ public class Ausiasbic {
 
 					Statement stmt = con.createStatement();
 					ResultSet rs = stmt.executeQuery("SELECT * FROM usuario");
-					model.setRowCount(0);
+					modelU.setRowCount(0);
 					while (rs.next()) {
 						Object[] row = new Object[5];
 						row[0] = rs.getInt("id_usuario");
@@ -214,7 +227,7 @@ public class Ausiasbic {
 						row[2] = rs.getString("telefono");
 						row[3] = rs.getString("dni");
 						row[4] = rs.getInt("id_bicicleta");
-						model.addRow(row);
+						modelU.addRow(row);
 					}
 
 					stmt.close();
@@ -229,7 +242,9 @@ public class Ausiasbic {
 		btnMostrarUsuario.setBounds(599, 138, 162, 25);
 		frmAusiasBici.getContentPane().add(btnMostrarUsuario);
 
-		// MOSTRAR BICIS
+		/*
+		 * Evento de mostrar bicis mediante un botón
+		 */
 		JButton btnMostrarBicis = new JButton("Mostrar bicicletas");
 		btnMostrarBicis.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -333,7 +348,9 @@ public class Ausiasbic {
 		lblOpcion.setBounds(60, 139, 187, 23);
 		frmAusiasBici.getContentPane().add(lblOpcion);
 
-		// AÑADIR USUARIO
+		/*
+		 * Evento añadir usuario mediante un botón
+		 */
 		JButton btnAddUsuario = new JButton("Añadir");
 		btnAddUsuario.addMouseListener(new MouseAdapter() {
 			@Override
@@ -364,10 +381,9 @@ public class Ausiasbic {
 					// Obtener la conexión a la base de datos
 					Connection con = ConnectionSingleton.getConnection();
 
-					// Crear la sentencia SQL para insertar un nuevo producto
+					// Crear la sentencia SQL para insertar un nuevo usuario
 
-					PreparedStatement pst = con.prepareStatement(
-							"INSERT INTO usuario (nombre, telefono, dni, id_bicicleta) VALUES (?, ?, ?, ?)");
+					PreparedStatement pst = con.prepareStatement("INSERT INTO usuario (nombre, telefono, dni, id_bicicleta) VALUES (?, ?, ?, ?)");
 					pst.setString(1, textFieldNombre.getText());
 					pst.setInt(2, Integer.parseInt(textFieldTelef.getText()));
 					pst.setString(3, textFieldDni.getText());
@@ -396,7 +412,9 @@ public class Ausiasbic {
 		btnAddUsuario.setBounds(193, 289, 89, 23);
 		panelAddUser.add(btnAddUsuario);
 
-		// AÑADIR BICI
+		/*
+		 * Evento añadir bici mediante un botón
+		 */
 		JButton btnNuevaBici = new JButton("Añadir");
 		btnNuevaBici.addMouseListener(new MouseAdapter() {
 			@Override
@@ -413,21 +431,20 @@ public class Ausiasbic {
 					// Obtener la conexión a la base de datos
 					Connection con = ConnectionSingleton.getConnection();
 
-					// Comprobar que existe bici y user
-					PreparedStatement exist_b_pstmt = con
-							.prepareStatement("SELECT id_bicicleta FROM bicicleta WHERE id_bicicleta=?");
+					// Comprobar que existe bici 
+					PreparedStatement exist_b_pstmt = con.prepareStatement("SELECT id_bicicleta FROM bicicleta WHERE id_bicicleta=?");
 					exist_b_pstmt.setInt(1, Integer.parseInt(idBici));
 					ResultSet exist_b = exist_b_pstmt.executeQuery();
+					
 					if (!exist_b.next()) {
 						// Crear la sentencia SQL para insertar una nueva bicicleta
-						PreparedStatement stmt = con
-								.prepareStatement("INSERT INTO bicicleta (id_bicicleta, disponibilidad) VALUES (?, ?)");
-
+						PreparedStatement stmt = con.prepareStatement("INSERT INTO bicicleta (id_bicicleta, disponibilidad) VALUES (?, ?)");
 						stmt.setString(1, idBici);
 						stmt.setString(2, "true"); // Especifica que la bicicleta no está alquilada al crearla
 
 						// Ejecutar la sentencia SQL
 						stmt.executeUpdate();
+						JOptionPane.showMessageDialog(null, "Bicicleta añadida");
 
 					} else {
 						JOptionPane.showMessageDialog(null, "Ya existe una bicicleta con ese ID", "Error",
@@ -441,15 +458,15 @@ public class Ausiasbic {
 
 				// Actualizar la lista de bicicletas mostrada en pantalla
 				btnMostrarBicis.doClick();
+
 				
-				
-				
-				// PARA ALQUILER COMBOBOX
+				/*
+				 *  Actualiza el comboBox de alquilar
+				 */
 				try {
 					// Obtener una conexión a la base de datos
 					Connection con = ConnectionSingleton.getConnection();
 
-					// Crear un objeto Statement o PreparedStatement
 					Statement stmt = con.createStatement();
 
 					// Ejecutar la consulta SQL y obtener un ResultSet
@@ -462,7 +479,8 @@ public class Ausiasbic {
 					while (rs.next()) {
 						comboBoxIdBiciAlquilar.addItem(rs.getString("id_bicicleta"));
 					}
-
+					
+					
 					// Cerrar el ResultSet, el Statement y la conexión
 					rs.close();
 					stmt.close();
@@ -480,7 +498,9 @@ public class Ausiasbic {
 		lblBici.setBounds(113, 111, 329, 20);
 		panelAddBici.add(lblBici);
 
-		// ALQUILAR
+		/*
+		 * Evento alquilar mediante un botón
+		 */
 		JButton btnAlquilar = new JButton("Alquilar");
 		btnAlquilar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -489,38 +509,32 @@ public class Ausiasbic {
 					// Obtener la conexión a la base de datos
 					Connection con = ConnectionSingleton.getConnection();
 
-					// valor seleccionado en el JComboBox
+					// id bici para alquilar seleccionado en el JComboBox
 					int id_bici = Integer.parseInt((String) comboBoxIdBiciAlquilar.getSelectedItem());
-
+					//id usuario para alquilar escrito en textfield
 					int idUsuario = Integer.parseInt(textFieldIdUsuarioAlquilar.getText());
-
+					
 					if (comboBoxIdBiciAlquilar.getSelectedIndex() == 0) {
-						JOptionPane.showMessageDialog(null, "Seleccione una bicicleta válida.", "Error",
-								JOptionPane.ERROR_MESSAGE);
-						return;
-					}
+						JOptionPane.showMessageDialog(null, "La bicicleta con ID 0 no puede ser alquilada.", "Error",JOptionPane.ERROR_MESSAGE);
+					}else {
 
 					// Verificar si el usuario ya tiene una bicicleta asignada
-					PreparedStatement pstmt1 = con
-							.prepareStatement("SELECT id_bicicleta FROM usuario WHERE id_usuario = ?");
+					PreparedStatement pstmt1 = con.prepareStatement("SELECT id_bicicleta FROM usuario WHERE id_usuario = ?");
 					pstmt1.setInt(1, idUsuario);
-					ResultSet rs1 = pstmt1.executeQuery();
-					if (rs1.next()) {
-						int idBiciAsignada = rs1.getInt("id_bicicleta");
+					ResultSet rs_bici_uso = pstmt1.executeQuery();
+					if (rs_bici_uso.next()) {
+						int idBiciAsignada = rs_bici_uso.getInt("id_bicicleta");
 						if (idBiciAsignada > 0) {
-							JOptionPane.showMessageDialog(null, "Este usuario ya tiene una bicicleta asignada.",
-									"Error", JOptionPane.ERROR_MESSAGE);
-							rs1.close();
-							pstmt1.close();
-							con.close();
-							return;
+							JOptionPane.showMessageDialog(null, "Este usuario ya tiene una bicicleta asignada.","Error", JOptionPane.ERROR_MESSAGE);
+							
 						}
 					}
-					rs1.close();
+					rs_bici_uso.close();
 					pstmt1.close();
-
-					PreparedStatement pstmt = con
-							.prepareStatement("UPDATE usuario SET id_bicicleta = ? WHERE id_usuario = ?");
+					
+					
+					//Actualiza el id_bici que tiene asignado un usuario
+					PreparedStatement pstmt = con.prepareStatement("UPDATE usuario SET id_bicicleta = ? WHERE id_usuario = ?");
 					pstmt.setInt(1, id_bici);
 					pstmt.setInt(2, idUsuario);
 
@@ -528,8 +542,7 @@ public class Ausiasbic {
 					pstmt.close();
 
 					// Cambiar el estado de la bicicleta a "false" en la tabla "bicicleta"
-					PreparedStatement pstmt2 = con
-							.prepareStatement("UPDATE bicicleta SET disponibilidad = 'false' WHERE id_bicicleta = ?");
+					PreparedStatement pstmt2 = con.prepareStatement("UPDATE bicicleta SET disponibilidad = 'false' WHERE id_bicicleta = ?");
 					pstmt2.setInt(1, id_bici);
 					pstmt2.executeUpdate();
 					pstmt2.close();
@@ -537,24 +550,25 @@ public class Ausiasbic {
 					// Eliminar y actualizar el JComboBox con los códigos de bicicleta restantes
 					comboBoxIdBiciAlquilar.removeAllItems();
 					Statement stmt = con.createStatement();
-					ResultSet rs = stmt
-							.executeQuery("SELECT id_bicicleta FROM bicicleta WHERE disponibilidad = 'true'");
-					while (rs.next()) {
-						comboBoxIdBiciAlquilar.addItem(rs.getInt("id_bicicleta"));
+					ResultSet bici_dispo = stmt.executeQuery("SELECT id_bicicleta FROM bicicleta WHERE disponibilidad = 'true'");
+					while (bici_dispo.next()) {
+						comboBoxIdBiciAlquilar.addItem(bici_dispo.getInt("id_bicicleta"));
 					}
 
 					// Ejecutar el botón "Mostrar" para actualizar la tabla
 					btnMostrarBicis.doClick();
 					btnMostrarUsuario.doClick();
-					// Mostrar un mensaje de éxito
+				
 					JOptionPane.showMessageDialog(null, "Alquiler con éxito");
 
-					rs.close();
+					bici_dispo.close();
 					stmt.close();
 					con.close();
-
+					}
 				} catch (SQLException e3) {
 					JOptionPane.showMessageDialog(null, e3.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				}catch(NumberFormatException ne) {
+					JOptionPane.showMessageDialog(null, "Introduce un ID de usuario", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 				
 				// Cargar IDs de bicicletas disponibles en el ComboBox
@@ -582,7 +596,9 @@ public class Ausiasbic {
 		btnAlquilar.setBounds(193, 246, 89, 25);
 		panelAlquilar.add(btnAlquilar);
 
-		// DEVOLVER
+		/*
+		 * Evento devolver mediante un botón
+		 */
 		JButton btnDevolver = new JButton("Devolver");
 		btnDevolver.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -643,7 +659,9 @@ public class Ausiasbic {
 				} catch (SQLException e3) {
 					JOptionPane.showMessageDialog(null, e3.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}
-				// Cargar IDs de bicicletas disponibles en el ComboBox
+				/*
+				 * Cargar los ids de las disponibles para devolver en el ComboBox Devolver
+				 */
 				try {
 					Connection con = ConnectionSingleton.getConnection();
 
@@ -663,27 +681,29 @@ public class Ausiasbic {
 					JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}
 				
-				// PARA ALQUILER COMBOBOX
+				/*
+				 *  Para mostrar en el comboBox Alquiler los ids de las bicis disponibles al actualizar
+				 */
 				try {
 					// Obtener una conexión a la base de datos
 					Connection con = ConnectionSingleton.getConnection();
 
-					// Crear un objeto Statement o PreparedStatement
+					// Crear un objeto Statement 
 					Statement stmt = con.createStatement();
 
 					// Ejecutar la consulta SQL y obtener un ResultSet
-					ResultSet rs = stmt.executeQuery("SELECT id_bicicleta FROM bicicleta WHERE disponibilidad = 'true' ");
+					ResultSet bici_dispo = stmt.executeQuery("SELECT id_bicicleta FROM bicicleta WHERE disponibilidad = 'true' ");
 
 					// Borrar los elementos existentes del JComboBox
 					comboBoxIdBiciAlquilar.removeAllItems();
 
 					// Iterar a través de los resultados y agregarlos al JComboBox
-					while (rs.next()) {
-						comboBoxIdBiciAlquilar.addItem(rs.getString("id_bicicleta"));
+					while (bici_dispo.next()) {
+						comboBoxIdBiciAlquilar.addItem(bici_dispo.getString("id_bicicleta"));
 					}
 
 					// Cerrar el ResultSet, el Statement y la conexión
-					rs.close();
+					bici_dispo.close();
 					stmt.close();
 					con.close();
 				} catch (SQLException e2) {
@@ -697,6 +717,10 @@ public class Ausiasbic {
 		btnDevolver.setBounds(181, 229, 117, 29);
 		panelDevolver.add(btnDevolver);
 
+		/*
+		 * Evento el cual permite que se haga visible el panel para añadir usuarios 
+		 * con sus componentes a partir de un botón 
+		 */
 		JButton btnRellenarUsuario = new JButton("Añadir usuario");
 		btnRellenarUsuario.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -709,7 +733,11 @@ public class Ausiasbic {
 		});
 		btnRellenarUsuario.setBounds(83, 200, 181, 25);
 		frmAusiasBici.getContentPane().add(btnRellenarUsuario);
-
+		
+		/*
+		 * Evento el cual permite que se haga visible el panel para añadir bicis 
+		 * con sus componentes a partir de un botón
+		 */
 		JButton btnRellenarBici = new JButton("Añadir bicicleta");
 		btnRellenarBici.addActionListener(new ActionListener() {
 
@@ -724,6 +752,10 @@ public class Ausiasbic {
 		btnRellenarBici.setBounds(332, 200, 181, 25);
 		frmAusiasBici.getContentPane().add(btnRellenarBici);
 
+		/*
+		 * Evento el cual permite que se haga visible el panel para devolver bicis 
+		 * con sus componentes a partir de un botón
+		 */
 		JButton btnDevolverBicicleta = new JButton("Devolver bicicleta");
 		btnDevolverBicicleta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -740,6 +772,10 @@ public class Ausiasbic {
 		btnDevolverBicicleta.setBounds(332, 266, 181, 25);
 		frmAusiasBici.getContentPane().add(btnDevolverBicicleta);
 
+		/*
+		 * Evento el cual permite que se haga visible el panel para alquilar bicis
+		 * con sus componentes a partir de un botón
+		 */
 		JButton btnAlquilarBicicleta = new JButton("Alquilar bicicleta");
 		btnAlquilarBicicleta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -752,7 +788,9 @@ public class Ausiasbic {
 		btnAlquilarBicicleta.setBounds(83, 266, 181, 25);
 		frmAusiasBici.getContentPane().add(btnAlquilarBicicleta);
 
-		// PARA ALQUILER COMBOBOX
+		/*
+		 *  Para mostrar en el comboBox Alquiler los ids de las bicis disponibles al abrir el programa
+		 */
 		try {
 			// Obtener una conexión a la base de datos
 			Connection con = ConnectionSingleton.getConnection();
@@ -779,7 +817,10 @@ public class Ausiasbic {
 			JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
 
-		// Cargar IDs de bicicletas disponibles en el ComboBox
+		
+		/*
+		 * Cargar los ids de las disponibles para devolver en el ComboBox Devolver al abrir el programa
+		 */
 		try {
 			Connection con = ConnectionSingleton.getConnection();
 
@@ -798,21 +839,6 @@ public class Ausiasbic {
 		} catch (SQLException ex) {
 			JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
-
 	}
 
-//	// Load Table
-//		public void loadData() {
-//			try {
-//				
-//			    Connection con = ConnectionSingleton.getConnection();
-//			    PreparedStatement pstmt3 = con.prepareStatement("SELECT * FROM bicicleta AND usuarios");
-//
-//			    ResultSet rs = pstmt3.executeQuery();
-//			    JTableBici.setModel(Ampliacion.resultSetToTableModel(rs));
-//			    JTableUser.setModel(Ampliacion.resultSetToTableModel(rs));
-//			} catch (Exception ex) {
-//				ex.printStackTrace();
-//			}
-//		}
 }
