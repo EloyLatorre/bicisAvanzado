@@ -10,6 +10,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
@@ -286,6 +287,11 @@ public class Ausiasbic {
 		textFieldNombre.setBounds(217, 113, 237, 20);
 		panelAddUser.add(textFieldNombre);
 
+		JCheckBox checkBoxMalEstado = new JCheckBox("Seleccionar si la bici está en mal estado");
+		checkBoxMalEstado.setBounds(113, 198, 309, 23);
+		panelDevolver.add(checkBoxMalEstado);
+
+		
 		JLabel lblId = new JLabel("ID:");
 		lblId.setBounds(52, 59, 106, 24);
 		panelAddUser.add(lblId);
@@ -599,123 +605,116 @@ public class Ausiasbic {
 		/*
 		 * Evento devolver mediante un botón
 		 */
+
 		JButton btnDevolver = new JButton("Devolver");
 		btnDevolver.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		    public void actionPerformed(ActionEvent e) {
+		        try {
+		            // Obtener la conexión a la base de datos
+		            Connection con = ConnectionSingleton.getConnection();
 
-				try {
-					// Obtener la conexión a la base de datos
-					Connection con = ConnectionSingleton.getConnection();
+		            // valor seleccionado en el JComboBox
+		            int id_bici = Integer.parseInt((String) comboBoxDevolver.getSelectedItem());
 
-					// valor seleccionado en el JComboBox
-					int id_bici = Integer.parseInt((String) comboBoxDevolver.getSelectedItem());
+		            // Obtener el id_usuario del usuario que tiene asignada la bicicleta
+		            PreparedStatement pstmt1 = con.prepareStatement("SELECT id_usuario FROM usuario WHERE id_bicicleta = ?");
+		            pstmt1.setInt(1, id_bici);
+		            ResultSet rs1 = pstmt1.executeQuery();
+		            if (rs1.next()) {
+		                int id_usuario = rs1.getInt("id_usuario");
 
-					// Obtener el id_usuario del usuario que tiene asignada la bicicleta
-					PreparedStatement pstmt1 = con
-							.prepareStatement("SELECT id_usuario FROM usuario WHERE id_bicicleta = ?");
-					pstmt1.setInt(1, id_bici);
-					ResultSet rs1 = pstmt1.executeQuery();
-					if (rs1.next()) {
-						int id_usuario = rs1.getInt("id_usuario");
+		                // Actualizar el id_bicicleta del usuario a 0
+		                PreparedStatement pstmt2 = con.prepareStatement("UPDATE usuario SET id_bicicleta = 0 WHERE id_usuario = ?");
+		                pstmt2.setInt(1, id_usuario);
+		                pstmt2.executeUpdate();
+		                pstmt2.close();
+		            }
+		            rs1.close();
+		            pstmt1.close();
 
-						// Actualizar el id_bicicleta del usuario a 0
-						PreparedStatement pstmt2 = con
-								.prepareStatement("UPDATE usuario SET id_bicicleta = 0 WHERE id_usuario = ?");
-						pstmt2.setInt(1, id_usuario);
-						pstmt2.executeUpdate();
-						pstmt2.close();
-					}
-					rs1.close();
-					pstmt1.close();
+		            // Obtener el estado del checkbox seleccionado
+		            boolean malEstado = checkBoxMalEstado.isSelected();
 
-					// Cambiar el estado de la bicicleta a "true" en la tabla "bicicleta"
-					PreparedStatement pstmt3 = con
-							.prepareStatement("UPDATE bicicleta SET disponibilidad = 'true' WHERE id_bicicleta = ?");
-					pstmt3.setInt(1, id_bici);
-					pstmt3.executeUpdate();
-					pstmt3.close();
+		            // Actualizar la disponibilidad de la bicicleta
+		            PreparedStatement pstmt3;
+		            if (malEstado) {
+		                pstmt3 = con.prepareStatement("UPDATE bicicleta SET disponibilidad = 'En reparación' WHERE id_bicicleta = ?");
+		            } else {
+		                pstmt3 = con.prepareStatement("UPDATE bicicleta SET disponibilidad = 'true' WHERE id_bicicleta = ?");
+		            }
+		            pstmt3.setInt(1, id_bici);
+		            pstmt3.executeUpdate();
+		            pstmt3.close();
 
-					// Eliminar y actualizar el JComboBox con los códigos de bicicleta restantes
-					comboBoxIdBiciAlquilar.removeAllItems();
-					Statement stmt = con.createStatement();
-
-					ResultSet rs = stmt
-							.executeQuery("SELECT id_bicicleta FROM bicicleta WHERE disponibilidad = 'false'");
-					while (rs.next()) {
-						comboBoxIdBiciAlquilar.addItem(rs.getInt("id_bicicleta"));
-					}
+		            // Eliminar y actualizar el JComboBox con los códigos de bicicleta restantes
+		            comboBoxIdBiciAlquilar.removeAllItems();
+		            Statement stmt = con.createStatement();
+		            ResultSet rs = stmt.executeQuery("SELECT id_bicicleta FROM bicicleta WHERE disponibilidad = 'false'");
+		            while (rs.next()) {
+		                comboBoxIdBiciAlquilar.addItem(rs.getInt("id_bicicleta"));
+		            }
 
 					// Ejecutar el botón "Mostrar" para actualizar la tabla
 					btnMostrarBicis.doClick();
-					btnMostrarUsuario.doClick();
+					btnMostrarUsuario.doClick();	
 
-					// Mostrar un mensaje de éxito
-					JOptionPane.showMessageDialog(null, "Devolución con éxito");
 
-					rs.close();
-					stmt.close();
-					con.close();
 
-				} catch (SQLException e3) {
-					JOptionPane.showMessageDialog(null, e3.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-				}
-				/*
-				 * Cargar los ids de las disponibles para devolver en el ComboBox Devolver
-				 */
-				try {
-					Connection con = ConnectionSingleton.getConnection();
+		// Mostrar un mensaje de éxito
+		JOptionPane.showMessageDialog(null, "Devolución con éxito");
 
-					Statement stmt = con.createStatement();
+		rs.close();
+		stmt.close();
+		con.close();
+	} catch (SQLException e3) {
+		JOptionPane.showMessageDialog(null, e3.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	}
+	// Cargar IDs de bicicletas disponibles en el ComboBox
+	try {
+		Connection con = ConnectionSingleton.getConnection();
+		Statement stmt = con.createStatement();
+		ResultSet rs = stmt.executeQuery("SELECT id_bicicleta FROM bicicleta WHERE disponibilidad = 'false'");
+		comboBoxDevolver.removeAllItems();
+		while (rs.next()) {
+			int idBici = rs.getInt("id_bicicleta");
+			comboBoxDevolver.addItem(rs.getString("id_bicicleta"));
+		}
+		rs.close();
+		stmt.close();
+		con.close();
+	} catch (SQLException ex) {
+		JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	}
+	
+	// Actualiza el id del combobox alquilar
+	try {
+		// Obtener una conexión a la base de datos
+		Connection con = ConnectionSingleton.getConnection();
+		// Crear un objeto Statement o PreparedStatement
+		Statement stmt = con.createStatement();
+		// Ejecutar la consulta SQL y obtener un ResultSet
+		ResultSet rs = stmt.executeQuery("SELECT id_bicicleta FROM bicicleta WHERE disponibilidad = 'true' ");
+		// Borrar los elementos existentes del JComboBox
+		comboBoxIdBiciAlquilar.removeAllItems();
+		// Iterar a través de los resultados y agregarlos al JComboBox
+		while (rs.next()) {
+			comboBoxIdBiciAlquilar.addItem(rs.getString("id_bicicleta"));
+		}
+		// Cerrar el ResultSet, el Statement y la conexión
+		rs.close();
+		stmt.close();
+		con.close();
+	} catch (SQLException e2) {
+		JOptionPane.showMessageDialog(null, e2.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	}
+	
+}
+});
 
-					ResultSet rs = stmt.executeQuery("SELECT id_bicicleta FROM bicicleta WHERE disponibilidad = 'false'");
-					comboBoxDevolver.removeAllItems();
+btnDevolver.setBounds(181, 229, 117, 29);
+panelDevolver.add(btnDevolver);
 
-					while (rs.next()) {
-						int idBici = rs.getInt("id_bicicleta");
-						comboBoxDevolver.addItem(rs.getString("id_bicicleta"));
-					}
-					rs.close();
-					stmt.close();
-					con.close();
-				} catch (SQLException ex) {
-					JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-				}
-				
-				/*
-				 *  Para mostrar en el comboBox Alquiler los ids de las bicis disponibles al actualizar
-				 */
-				try {
-					// Obtener una conexión a la base de datos
-					Connection con = ConnectionSingleton.getConnection();
 
-					// Crear un objeto Statement 
-					Statement stmt = con.createStatement();
-
-					// Ejecutar la consulta SQL y obtener un ResultSet
-					ResultSet bici_dispo = stmt.executeQuery("SELECT id_bicicleta FROM bicicleta WHERE disponibilidad = 'true' ");
-
-					// Borrar los elementos existentes del JComboBox
-					comboBoxIdBiciAlquilar.removeAllItems();
-
-					// Iterar a través de los resultados y agregarlos al JComboBox
-					while (bici_dispo.next()) {
-						comboBoxIdBiciAlquilar.addItem(bici_dispo.getString("id_bicicleta"));
-					}
-
-					// Cerrar el ResultSet, el Statement y la conexión
-					bici_dispo.close();
-					stmt.close();
-					con.close();
-				} catch (SQLException e2) {
-					JOptionPane.showMessageDialog(null, e2.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-				}
-				
-			}
-
-		});
-
-		btnDevolver.setBounds(181, 229, 117, 29);
-		panelDevolver.add(btnDevolver);
 
 		/*
 		 * Evento el cual permite que se haga visible el panel para añadir usuarios 
@@ -839,6 +838,71 @@ public class Ausiasbic {
 		} catch (SQLException ex) {
 			JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
+		JButton btnRepararBicis = new JButton("Reparar Bicis");
+		btnRepararBicis.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					// Obtener la conexión a la base de datos
+					Connection con = ConnectionSingleton.getConnection();
+
+					// Mostrar una ventana emergente para seleccionar la bicicleta a reparar
+					JComboBox<Integer> comboBoxReparar = new JComboBox<Integer>();
+					PreparedStatement pstmt = con.prepareStatement("SELECT id_bicicleta FROM bicicleta WHERE disponibilidad = 'En reparación'");
+					ResultSet rs = pstmt.executeQuery();
+					while (rs.next()) {
+						comboBoxReparar.addItem(rs.getInt("id_bicicleta"));
+					}
+					rs.close();
+					pstmt.close();
+					int result = JOptionPane.showConfirmDialog(null, comboBoxReparar, "Seleccionar bicicleta a reparar", JOptionPane.OK_CANCEL_OPTION);
+					if (result == JOptionPane.OK_OPTION) {
+						int id_bici = (int) comboBoxReparar.getSelectedItem();
+
+						// Actualizar el estado de la bicicleta a "En reparación" y la disponibilidad a "false"
+						PreparedStatement pstmt2 = con.prepareStatement("UPDATE bicicleta SET disponibilidad = 'En reparación', disponibilidad = 'true' WHERE id_bicicleta = ?");
+						pstmt2.setInt(1, id_bici);
+						pstmt2.executeUpdate();
+						pstmt2.close();
+
+						// Actualizar el JComboBox "Devolver" con las bicicletas reparadas
+						comboBoxDevolver.removeAllItems();
+						PreparedStatement pstmt3 = con.prepareStatement("SELECT id_bicicleta FROM bicicleta WHERE disponibilidad = 'false'");
+						ResultSet rs2 = pstmt3.executeQuery();
+						while (rs2.next()) {
+							comboBoxDevolver.addItem(rs2.getInt("id_bicicleta"));
+						}
+						rs2.close();
+						pstmt3.close();
+
+						// Mostrar un mensaje de éxito
+						JOptionPane.showMessageDialog(null, "Bicicleta reparada con éxito");
+
+						// Ejecutar el botón "Mostrar" para actualizar la tabla
+						btnMostrarBicis.doClick();
+					}
+
+					con.close();
+				} catch (SQLException ex) {
+					JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				}
+
+			}
+		});
+		btnRepararBicis.setBounds(75, 52, 189, 25);
+		frmAusiasBici.getContentPane().add(btnRepararBicis);
+
+		JLabel lblUsuarios = new JLabel("Usuarios:");
+		lblUsuarios.setFont(new Font("Dialog", Font.PLAIN, 20));
+		lblUsuarios.setBounds(612, 120, 393, 55);
+		frmAusiasBici.getContentPane().add(lblUsuarios);
+
+		JLabel lblBicicletas = new JLabel("Bicicletas:");
+		lblBicicletas.setFont(new Font("Dialog", Font.PLAIN, 20));
+		lblBicicletas.setBounds(612, 408, 393, 55);
+		frmAusiasBici.getContentPane().add(lblBicicletas);
+		
+		btnMostrarUsuario.setVisible(false);
+		btnMostrarBicis.setVisible(false);
 	}
 
 }
