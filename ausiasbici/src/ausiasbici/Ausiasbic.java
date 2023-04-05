@@ -300,32 +300,32 @@ public class Ausiasbic {
 		panelAddUser.add(textFieldDni);
 
 		JComboBox comboBoxDevolver = new JComboBox();
-		comboBoxDevolver.setBounds(245, 87, 195, 22);
+		comboBoxDevolver.setBounds(150, 160, 195, 22);
 		panelDevolver.add(comboBoxDevolver);
 
 		JLabel lblIdBiciAlquilar = new JLabel("ID bicicleta a alquilar:");
-		lblIdBiciAlquilar.setBounds(54, 161, 175, 14);
+		lblIdBiciAlquilar.setBounds(57, 161, 175, 14);
 		panelAlquilar.add(lblIdBiciAlquilar);
 
 		JLabel lblIdUsuarioAlquilar = new JLabel("ID usuario que desea alquilar:");
-		lblIdUsuarioAlquilar.setBounds(54, 96, 185, 14);
+		lblIdUsuarioAlquilar.setBounds(57, 95, 214, 14);
 		panelAlquilar.add(lblIdUsuarioAlquilar);
 
 		textFieldIdUsuarioAlquilar = new JTextField();
 		textFieldIdUsuarioAlquilar.setColumns(10);
-		textFieldIdUsuarioAlquilar.setBounds(239, 93, 237, 20);
+		textFieldIdUsuarioAlquilar.setBounds(319, 83, 151, 20);
 		panelAlquilar.add(textFieldIdUsuarioAlquilar);
 
 		JLabel lblNewLabel_1 = new JLabel("Selecciona el ID de la bici a devolver:");
-		lblNewLabel_1.setBounds(22, 90, 250, 16);
+		lblNewLabel_1.setBounds(113, 106, 323, 16);
 		panelDevolver.add(lblNewLabel_1);
 
 		JComboBox comboBoxIdBiciAlquilar = new JComboBox();
-		comboBoxIdBiciAlquilar.setBounds(239, 157, 237, 22);
+		comboBoxIdBiciAlquilar.setBounds(319, 157, 151, 22);
 		panelAlquilar.add(comboBoxIdBiciAlquilar);
 
 		textFieldIDBici = new JTextField();
-		textFieldIDBici.setBounds(213, 87, 235, 26);
+		textFieldIDBici.setBounds(128, 173, 235, 26);
 		panelAddBici.add(textFieldIDBici);
 		textFieldIDBici.setColumns(10);
 
@@ -441,102 +441,49 @@ public class Ausiasbic {
 
 				// Actualizar la lista de bicicletas mostrada en pantalla
 				btnMostrarBicis.doClick();
+				
+				
+				
+				// PARA ALQUILER COMBOBOX
+				try {
+					// Obtener una conexión a la base de datos
+					Connection con = ConnectionSingleton.getConnection();
+
+					// Crear un objeto Statement o PreparedStatement
+					Statement stmt = con.createStatement();
+
+					// Ejecutar la consulta SQL y obtener un ResultSet
+					ResultSet rs = stmt.executeQuery("SELECT id_bicicleta FROM bicicleta WHERE disponibilidad = 'true' ");
+
+					// Borrar los elementos existentes del JComboBox
+					comboBoxIdBiciAlquilar.removeAllItems();
+
+					// Iterar a través de los resultados y agregarlos al JComboBox
+					while (rs.next()) {
+						comboBoxIdBiciAlquilar.addItem(rs.getString("id_bicicleta"));
+					}
+
+					// Cerrar el ResultSet, el Statement y la conexión
+					rs.close();
+					stmt.close();
+					con.close();
+				} catch (SQLException e7) {
+					JOptionPane.showMessageDialog(null, e7.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				}
+
 			}
 		});
-		btnNuevaBici.setBounds(177, 181, 117, 29);
+		btnNuevaBici.setBounds(180, 231, 117, 29);
 		panelAddBici.add(btnNuevaBici);
 
 		JLabel lblBici = new JLabel("Introduzca el ID de la nueva bicicleta:");
-		lblBici.setBounds(24, 90, 190, 20);
+		lblBici.setBounds(113, 111, 329, 20);
 		panelAddBici.add(lblBici);
 
 		// ALQUILAR
 		JButton btnAlquilar = new JButton("Alquilar");
 		btnAlquilar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
-//						String id_bici_alquilar=String.valueOf(comboBoxIdBiciAlquilar.getSelectedItem());
-//						String id_user_alquilar=textFieldIdUsuarioAlquilar.getText();
-//						
-//						 if (id_bici_alquilar.isEmpty() || id_user_alquilar.isEmpty()) {
-//					            JOptionPane.showMessageDialog(null, "Los campos no pueden estar vacíos", "Error", JOptionPane.ERROR_MESSAGE);
-//					            
-//					        }
-//
-//					try {
-//						
-//						Connection con=ConnectionSingleton.getConnection();
-//						
-//						if (id_bici_alquilar.equals("0")) {
-//		                    JOptionPane.showMessageDialog(null, "La bicicleta con id 0 no puede ser alquilada", "Error", JOptionPane.ERROR_MESSAGE);
-//		                } else {
-//						
-//						
-//						//Comprobar que existe bici y user
-//						PreparedStatement exist_b_pstmt = con.prepareStatement("SELECT * FROM bicicleta WHERE id_bicicleta=?");
-//						exist_b_pstmt.setInt(1, Integer.parseInt(id_bici_alquilar));
-//						ResultSet rs_exist_b = exist_b_pstmt.executeQuery();
-//
-//						PreparedStatement exist_u_pstmt = con.prepareStatement("SELECT * FROM usuario WHERE id_usuario=?");
-//						exist_u_pstmt.setInt(1, Integer.parseInt(id_user_alquilar));
-//						ResultSet rs_exist_u = exist_u_pstmt.executeQuery();
-//
-//						if (!rs_exist_b.next()) {//no existe bici
-//						    JOptionPane.showMessageDialog(null, "El ID de la bici ingresado no existe", "Error", JOptionPane.ERROR_MESSAGE);
-//						}  else if(!rs_exist_u.next()) {//no existe user
-//						    	 JOptionPane.showMessageDialog(null, "El ID del usuario ingresado no existe", "Error", JOptionPane.ERROR_MESSAGE);
-//						
-//						} else {//si existen los 2
-//							
-//							//Comprobar usuario id_bici =0
-//							PreparedStatement sel2_pstmt = con.prepareStatement("SELECT * FROM usuario WHERE id_usuario = ? AND id_bicicleta = 0");
-//							sel2_pstmt.setInt(1, Integer.parseInt(id_user_alquilar));
-//							ResultSet rs2_sel = sel2_pstmt.executeQuery();
-//							
-//							
-//							if(!rs2_sel.next()) {
-//								JOptionPane.showMessageDialog(null, "Este usuario ya tiene una bicicleta alquilada", "Error", JOptionPane.ERROR_MESSAGE);
-//
-//							}else {
-//								 //Compruebo que la bici este libre
-//								
-//								PreparedStatement sel_pstmt = con.prepareStatement("SELECT disponibilidad FROM bicicleta WHERE id_bicicleta=? AND disponibilidad = 'true'");
-//								sel_pstmt.setInt(1, Integer.parseInt(id_bici_alquilar));
-//								ResultSet rs_sel = sel_pstmt.executeQuery();
-//								
-//								
-//								if (!rs_sel.next()) {// no dispo
-//									JOptionPane.showMessageDialog(null, "La bicicleta no está disponible para alquilar", "Error", JOptionPane.ERROR_MESSAGE);
-//
-//								} else {//dispo, poner a false ahora
-//								   
-//									 PreparedStatement upd_pstmt = con.prepareStatement("UPDATE bicicleta SET disponibilidad = 'false' WHERE id_bicicleta = ?");
-//								        upd_pstmt.setInt(1, Integer.parseInt(id_bici_alquilar));
-//								        upd_pstmt.executeUpdate();
-//								        
-//								        
-//
-//								        PreparedStatement upd2_pstmt = con.prepareStatement("UPDATE usuario SET id_bicicleta = ? WHERE id_usuario = ?");
-//								        upd2_pstmt.setInt(1, Integer.parseInt(id_bici_alquilar));
-//								        upd2_pstmt.setInt(2, Integer.parseInt(id_user_alquilar));
-//								        
-//								        upd2_pstmt.executeUpdate();
-//								        
-//								        						
-//								}
-//							
-//								rs_sel.close();
-//								sel_pstmt.close();
-//							}	
-//							}
-//							}
-//						btnMostrarBicis.doClick();
-//				        btnMostrarUsuario.doClick();	
-//						con.close();
-//						
-//					}catch(SQLException e3) {
-//						JOptionPane.showMessageDialog(null, e3.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//			        } 
 
 				try {
 					// Obtener la conexión a la base de datos
@@ -609,6 +556,26 @@ public class Ausiasbic {
 				} catch (SQLException e3) {
 					JOptionPane.showMessageDialog(null, e3.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}
+				
+				// Cargar IDs de bicicletas disponibles en el ComboBox
+				try {
+					Connection con = ConnectionSingleton.getConnection();
+
+					Statement stmt = con.createStatement();
+
+					ResultSet rs = stmt.executeQuery("SELECT id_bicicleta FROM bicicleta WHERE disponibilidad = 'false'");
+					comboBoxDevolver.removeAllItems();
+
+					while (rs.next()) {
+						int idBici = rs.getInt("id_bicicleta");
+						comboBoxDevolver.addItem(rs.getString("id_bicicleta"));
+					}
+					rs.close();
+					stmt.close();
+					con.close();
+				} catch (SQLException ex) {
+					JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				}
 
 			}
 		});
@@ -676,12 +643,58 @@ public class Ausiasbic {
 				} catch (SQLException e3) {
 					JOptionPane.showMessageDialog(null, e3.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}
+				// Cargar IDs de bicicletas disponibles en el ComboBox
+				try {
+					Connection con = ConnectionSingleton.getConnection();
 
+					Statement stmt = con.createStatement();
+
+					ResultSet rs = stmt.executeQuery("SELECT id_bicicleta FROM bicicleta WHERE disponibilidad = 'false'");
+					comboBoxDevolver.removeAllItems();
+
+					while (rs.next()) {
+						int idBici = rs.getInt("id_bicicleta");
+						comboBoxDevolver.addItem(rs.getString("id_bicicleta"));
+					}
+					rs.close();
+					stmt.close();
+					con.close();
+				} catch (SQLException ex) {
+					JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				
+				// PARA ALQUILER COMBOBOX
+				try {
+					// Obtener una conexión a la base de datos
+					Connection con = ConnectionSingleton.getConnection();
+
+					// Crear un objeto Statement o PreparedStatement
+					Statement stmt = con.createStatement();
+
+					// Ejecutar la consulta SQL y obtener un ResultSet
+					ResultSet rs = stmt.executeQuery("SELECT id_bicicleta FROM bicicleta WHERE disponibilidad = 'true' ");
+
+					// Borrar los elementos existentes del JComboBox
+					comboBoxIdBiciAlquilar.removeAllItems();
+
+					// Iterar a través de los resultados y agregarlos al JComboBox
+					while (rs.next()) {
+						comboBoxIdBiciAlquilar.addItem(rs.getString("id_bicicleta"));
+					}
+
+					// Cerrar el ResultSet, el Statement y la conexión
+					rs.close();
+					stmt.close();
+					con.close();
+				} catch (SQLException e2) {
+					JOptionPane.showMessageDialog(null, e2.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				
 			}
 
 		});
 
-		btnDevolver.setBounds(183, 182, 117, 29);
+		btnDevolver.setBounds(181, 229, 117, 29);
 		panelDevolver.add(btnDevolver);
 
 		JButton btnRellenarUsuario = new JButton("Añadir usuario");
